@@ -1,0 +1,71 @@
+main_tasks:
+  - text: 'How many salamanders are in this image?'
+    variable: 'number'
+    responses:
+      - text: '1'
+        action: keypress{1 ~ 1}
+        jump-to: salamander_color
+      - text: '2'
+        action: keypress{2 ~ 2}
+      - text: '3'
+        action: keypress{3 ~ 3}
+      - text: '4'
+        action: keypress{4 ~ 4}
+      - text: '5'
+        action: keypress{5 ~ 5}                       
+      - text: '6'
+        action: keypress{6 ~ 6}
+      - text: '7'
+        action: keypress{7 ~ 7}                       
+      - text: '8'
+        action: keypress{8 ~ 8}
+      - text: '9'
+        action: keypress{9 ~ 9}       
+      - text: 'more than 9'
+        action: keypress{m ~ M}        
+      - text: 'unusable image'
+        action: keypress{u ~ U}  
+        jump-to: unusable_image_tasks      
+      - text: 'flag for discussion'
+        action: keypress{f ~ F}
+
+
+#
+# Only run if one salamander is in the image.
+#
+salamander_color:
+  - text: 'What is the salamander color pattern?'
+    variable: 'color'
+    responses:
+      - text: 'striped'
+        action: keypress{s ~ S}
+      - text: 'lead (unstriped)'
+        action: keypress{l ~ L}
+      - text: 'other color pattern'
+        action: keypress{o ~ O}
+      - text: 'unusable image'
+        action: keypress{u ~ U}
+        jump-to: unusable_image_tasks
+      - text: 'flag for discussion'
+        action: keypress{f ~ F}
+
+#
+# Only run these tasks if the image is not usable.
+#
+unusable_image_tasks:
+  - text: 'Why is the image not usable?'
+    variable: 'unusable_reason'
+    responses:
+      - text: 'image out of focus'
+        action: keypress{1 ~ 1}
+      - text: 'insufficient image size'
+        action: keypress{2 ~ 2}
+      - text: 'glare on salamander'
+        action: keypress{3 ~ 3}        
+      - text: 'incorrect identification'
+        action: keypress{4 ~ 4}
+      - text: 'not in natural habitat'
+        action: keypress{5 ~ 5}
+      - text: 'other'
+        action: keypress{6 ~ 6}
+        
