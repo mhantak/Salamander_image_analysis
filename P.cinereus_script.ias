@@ -37,8 +37,8 @@ salamander_color:
   - text: 'What is the salamander color pattern?'
     variable: 'color'
     responses:
-      - text: 'striped'
-        action: keypress{s ~ S}
+      - text: 'red striped'
+        action: keypress{r ~ R}
       - text: 'lead (unstriped)'
         action: keypress{l ~ L}
       - text: 'other color pattern'
