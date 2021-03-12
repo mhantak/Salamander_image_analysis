@@ -15,10 +15,10 @@ print(df.head())
 all_images = os.listdir('Sets_1_to_10')
 
 co = 0
-for image in all_images:
+for image in all_images: #can also do --- (for co, image in enumerate(all_images):) ---for this don't need the co=0 above of co += 1 below
     print(image)
     color_majority = df[df['file'] == image]['color_majority']
-    color_majority = str(list(color_majority)[0])
+    color_majority = str(list(color_majority)[0]) # Do I need this? Try running without next time 
     if not os.path.exists(os.path.join('categories', color_majority)):
         os.mkdir(os.path.join('categories', color_majority))
 
@@ -27,6 +27,6 @@ for image in all_images:
 
     move(path_from, path_to)
     print('Moved {} to {}'.format(image, path_to))
-    co += 1 
+    co += 1 #can also do (co = co + 1) -- if left co = 0 at the beginning 
 
 print('Moved {} images.'.format(co))
