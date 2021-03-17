@@ -39,6 +39,13 @@ val_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
+def getAllImagesDataset(path):
+    all_images = torchvision.datasets.ImageFolder(
+        root=path, transform=val_transform
+    )
+
+    return all_images
+
 def getDatasets(path, train_size=0.75, rng=None):
     if rng is None:
         rng = np.random.default_rng()
