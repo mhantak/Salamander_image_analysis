@@ -11,7 +11,7 @@ import sys
 
 rng = np.random.default_rng(seed=12345)
 
-train_data, val_data = getDatasets()
+train_data, val_data = getDatasets('/blue/guralnick/mhantak/categories_binary/')
 trainloader, valloader = getDataLoaders(train_data, val_data)
 
 model = SalamanderModel(lr=float(sys.argv[1]))
