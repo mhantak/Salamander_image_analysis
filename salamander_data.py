@@ -1,4 +1,4 @@
-#Salamander color morph machine learning 
+#Salamander color morph machine learning
 
 import torch
 import numpy as np
@@ -7,35 +7,35 @@ from torchvision import transforms
 
 
 ####Oversampling
-def make_weights_for_balanced_classes(images, nclasses):                        
-    count = [0] * nclasses   
-    labels = []                                                   
-    for cnt, item in enumerate(images):                                                         
-        count[item[1]] += 1   
+def make_weights_for_balanced_classes(images, nclasses):
+    count = [0] * nclasses
+    labels = []
+    for cnt, item in enumerate(images):
+        count[item[1]] += 1
         labels.append(item[1])
-        print(cnt)                                                  
-    weight_per_class = [0.] * nclasses                                      
-    N = float(sum(count))                                                   
-    for i in range(nclasses):                                                   
-        weight_per_class[i] = N/float(count[i])                                 
-    weight = [0] * len(images)                                              
-    for idx, val in enumerate(labels):                                          
-        weight[idx] = weight_per_class[val]                                  
-    return weight 
+        print(cnt)
+    weight_per_class = [0.] * nclasses
+    N = float(sum(count))
+    for i in range(nclasses):
+        weight_per_class[i] = N/float(count[i])
+    weight = [0] * len(images)
+    for idx, val in enumerate(labels):
+        weight[idx] = weight_per_class[val]
+    return weight
 
 # Data augmentation and normalization for training.
 train_transform = transforms.Compose([
-        transforms.Resize((596,447)), 
-        transforms.RandomHorizontalFlip(p=0.5),  
-        transforms.RandomVerticalFlip(p=0.5),  
-        transforms.RandomRotation(degrees=(-90, 90)), 
+        transforms.Resize((596,447)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomVerticalFlip(p=0.5),
+        transforms.RandomRotation(degrees=(-90, 90)),
         transforms.ColorJitter(hue=.05, saturation=.05),
         transforms.RandomAffine(degrees=0, translate=(.1, .1)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
 val_transform = transforms.Compose([
-        transforms.Resize((596,447)), 
+        transforms.Resize((596,447)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
@@ -64,8 +64,8 @@ def getDatasets(path, train_size=0.75, rng=None):
     indices = list(range(num_train))
     split = int(np.floor(train_size * num_train))
     rng.shuffle(indices)
-    train_idx, valid_idx = indices[:split], indices[split:] 
-    #print(len(train_idx)) 
+    train_idx, valid_idx = indices[:split], indices[split:]
+    #print(len(train_idx))
     #print(len(valid_idx))
 
     traindata = torch.utils.data.Subset(trainset, indices=train_idx)
@@ -80,8 +80,8 @@ def getDataLoaders(
     if use_weighted_sampling:
         # For unbalanced dataset we create a weighted sampler
         weights = make_weights_for_balanced_classes(
-            train_data, len(train_data.dataset.classes))                                                             
-        weights = torch.Tensor(weights)                                    
+            train_data, len(train_data.dataset.classes))
+        weights = torch.Tensor(weights)
         sampler1 = torch.utils.data.sampler.WeightedRandomSampler(
             weights, len(weights)
         )
