@@ -9,14 +9,14 @@ from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
 import sys
 
-rng = np.random.default_rng(seed=12345)
+#rng = np.random.default_rng(seed=12345)
 
 train_data, val_data = getDatasets('/blue/guralnick/mhantak/categories_binary/')
 trainloader, valloader = getDataLoaders(train_data, val_data)
 
 model = SalamanderModel(lr=float(sys.argv[1]))
 tb_logger = pl_loggers.TensorBoardLogger(
-    'logsTEST', f'sal_experiment2-{model.lr}'
+    'logsTEST', f'sal_experiment3-{model.lr}'
 )
 
 checkpoint_callback = ModelCheckpoint(
@@ -28,6 +28,7 @@ checkpoint_callback = ModelCheckpoint(
     prefix=f'weight-{model.lr}'
 )
 
+#trainer = pl.Trainer(logger=tb_logger)
 trainer = pl.Trainer(logger=tb_logger, max_epochs=50, gpus=1, checkpoint_callback=checkpoint_callback)
 trainer.fit(model, trainloader, valloader)
 
