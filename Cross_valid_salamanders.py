@@ -26,7 +26,7 @@ for train_idx, valid_idx in kf.split(indices):
 
     model = SalamanderModel(lr=float(sys.argv[1]))
     tb_logger = pl_loggers.TensorBoardLogger(
-        'logsTEST', f'sal_experiment3-{model.lr}'
+        'logsCrossVal', f'sal_exp_cross_val-{model.lr}'
     )
 
     checkpoint_callback = ModelCheckpoint(
