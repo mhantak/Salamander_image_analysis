@@ -46,32 +46,32 @@ def getAllImagesDataset(path):
 
     return all_images
 
-def getDatasets(path, train_size=0.75, rng=None):
+def getDatasets(path, train_size=0.75, rng=None, train_idx=None, valid_idx=None):
     if rng is None:
         rng = np.random.default_rng()
-
-    # Create duplicate datasets with different augmentation for
-    # testing/training; we'll later subset them into disjoint sets.
+   
     trainset = torchvision.datasets.ImageFolder(
         root=path, transform=train_transform
     )
     validset = torchvision.datasets.ImageFolder(
         root=path, transform=val_transform
-    )
-
-    # Create the index splits for training and validation.
-    num_train = len(trainset)
-    indices = list(range(num_train))
-    split = int(np.floor(train_size * num_train))
-    rng.shuffle(indices)
-    train_idx, valid_idx = indices[:split], indices[split:]
-    #print(len(train_idx))
-    #print(len(valid_idx))
-
-    traindata = torch.utils.data.Subset(trainset, indices=train_idx)
-    valdata = torch.utils.data.Subset(validset, indices=valid_idx)
-
+    )   
+   
+    if train_idx is None or valid_idx is None:
+        num_train = len(trainset)
+        indices = list(range(num_train))
+        split = int(np.floor(train_size * num_train))
+        rng.shuffle(indices)
+        train_idx, valid_idx = indices[:split], indices[split:]
+        
+        traindata = torch.utils.data.Subset(trainset, indices=train_idx)
+        valdata = torch.utils.data.Subset(validset, indices=valid_idx)
+    else:
+        traindata = torch.utils.data.Subset(trainset, indices=train_idx)
+        valdata = torch.utils.data.Subset(validset, indices=valid_idx)
+    
     return traindata, valdata
+
 
 def getDataLoaders(
     train_data, val_data, batch_size=8, num_workers=16,
