@@ -37,7 +37,7 @@ loop_count = 0
 for train_idx, valid_idx in kf.split(indices): 
     print('train_idx: %s, valid_idx: %s' % (train_idx, valid_idx))
 
-    fold_folder = outpath / ('fold_"' + str(loop_count))
+    fold_folder = outpath / ('fold_' + str(loop_count))
     fold_folder.mkdir()
     print(f'Cross-validation fold {loop_count}; saving results to {fold_folder}.')
     
