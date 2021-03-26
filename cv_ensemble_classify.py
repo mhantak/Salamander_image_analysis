@@ -1,26 +1,41 @@
 
 from Salamander_lightning_model import SalamanderModel
 from salamander_data import getAllImagesDataset
-import sys
 import torch
 import torch.utils.data
 import torch.nn.functional as F
-import pandas as pd
 import csv
 import re
-import numpy as np
 from pathlib import Path
+import os.path
+from argparse import ArgumentParser
 
-if len(sys.argv) != 3:
-    exit(
-        'ERROR: Please provide a cross-validation output path and an images '
-        'folder.\n\nUsage: {0} CV_OUTPUT IMG_FOLDER'.format(sys.argv[0])
-    )
 
+argp = ArgumentParser(
+    description='Uses a cross-validation ensemble to analyze images.'
+)
+argp.add_argument(
+    '-c', '--cv_dir', type=str, required=True, 
+    help='The path to a cross-validation output directory.'
+)
+argp.add_argument(
+    '-i', '--images', type=str, required=True,
+    help='The path to a collection of images.'
+)
+argp.add_argument(
+    '-o', '--output', type=str, required=False, default='',
+    help='The path of an output CSV file.'
+)
+argp.add_argument(
+    '-a', '--accuracy', action='store_true',
+    help='If set, record image set classifications and track accuracy.'
+)
+
+args = argp.parse_args()
 
 # Get the cross-validation model checkpoints.
 ckpts = []
-cv_dir = Path(sys.argv[1])
+cv_dir = Path(args.cv_dir)
 for fold_dir in cv_dir.glob('fold_*'):
     if fold_dir.is_dir():
         best_epoch = -1
@@ -36,8 +51,18 @@ for fold_dir in cv_dir.glob('fold_*'):
         ckpts.append(best_ckpt)
 
 
-all_images = getAllImagesDataset(sys.argv[2])
+all_images = getAllImagesDataset(args.images)
 
+if args.output != '':
+    writer = csv.DictWriter(
+        open(args.output, 'w'),
+        ['file', 'prediction']
+    )
+    writer.writeheader()
+else:
+    writer = None
+
+rowout = {}
 models = []
 
 with torch.no_grad():
@@ -50,6 +75,9 @@ with torch.no_grad():
     i = 0
     correct_cnt = 0
     for img, label in all_images:
+        imgfile = all_images.samples[i][0]
+        rowout['file'] = os.path.basename(imgfile)
+
         outputs = []
         for model in models:
             output = model(torch.unsqueeze(img, 0))
@@ -61,12 +89,21 @@ with torch.no_grad():
         model_avg = torch.mean(outputs, 0)
         #print(model_avg)
         p_label = torch.max(model_avg, 0).indices
-        print(label, int(p_label), all_images.samples[i])
+        print(label, int(p_label), imgfile)
         #print(p_labels, all_images.samples[i])
-        if label == p_label:
-            correct_cnt += 1
-        else:
-            print('  MISTAKE:', all_images.samples[i])
+
+        rowout['prediction'] = int(p_label)
+        if writer is not None:
+            writer.writerow(rowout)
+
+        if args.accuracy:
+            if label == p_label:
+                correct_cnt += 1
+            else:
+                print('  MISTAKE:', all_images.samples[i])
         i += 1
-        print(correct_cnt / i, i)
+        if args.accuracy:
+            print('Cumulative accuracy:', correct_cnt / i, i)
+
+print(i, 'total images processed.')
 
