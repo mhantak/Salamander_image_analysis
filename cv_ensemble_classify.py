@@ -56,7 +56,7 @@ all_images = getAllImagesDataset(args.images)
 if args.output != '':
     writer = csv.DictWriter(
         open(args.output, 'w'),
-        ['file', 'prediction']
+        ['file', 'prediction', '0', '1']
     )
     writer.writeheader()
 else:
@@ -76,7 +76,6 @@ with torch.no_grad():
     correct_cnt = 0
     for img, label in all_images:
         imgfile = all_images.samples[i][0]
-        rowout['file'] = os.path.basename(imgfile)
 
         outputs = []
         for model in models:
@@ -92,8 +91,11 @@ with torch.no_grad():
         print(label, int(p_label), imgfile)
         #print(p_labels, all_images.samples[i])
 
-        rowout['prediction'] = int(p_label)
         if writer is not None:
+            rowout['file'] = os.path.basename(imgfile)
+            rowout['prediction'] = int(p_label)
+            rowout['0'] = float(model_avg[0])
+            rowout['1'] = float(model_avg[1])
             writer.writerow(rowout)
 
         if args.accuracy:
